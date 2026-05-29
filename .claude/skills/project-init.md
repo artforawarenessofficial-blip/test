@@ -11,12 +11,25 @@ Options:
 - `--openspec-only` - Only initialize OpenSpec
 - `--graphify-only` - Only initialize Graphify
 - `--audit-only` - Only set up security audit rules
+- `--caveman` - Install Caveman for token optimization
+
+---
+
+## Auto-Trigger on Session Start
+
+This skill includes a **SessionStart hook** that automatically checks project setup when you open Claude Code. If any tools are missing, it prompts you to run `/project-init`.
+
+The hook checks:
+- OpenSpec initialized (`openspec/` exists)
+- Graphify initialized (`graphify-out/graph.json` exists)
+- Security rules in CLAUDE.md
+- Caveman installed (for token savings)
 
 ---
 
 ## What This Skill Does
 
-When invoked, this skill sets up three critical workflows for any AI-coded project:
+When invoked, this skill sets up four critical workflows for any AI-coded project:
 
 ### 1. OpenSpec - Spec-Driven Development
 Ensures you agree on WHAT to build before writing code.
@@ -26,6 +39,9 @@ Maps your entire codebase into a queryable knowledge graph.
 
 ### 3. Webcoded Audit - Security & Quality
 Applies the 14-point security checklist for AI-built apps.
+
+### 4. Caveman - Token Optimization
+Reduces output tokens by ~65% while maintaining full technical accuracy. "Why use many token when few token do trick."
 
 ---
 
@@ -53,6 +69,10 @@ npm install -g @fission-ai/openspec@latest
 uv tool install graphifyy
 # or: pipx install graphifyy
 # or: pip install graphifyy
+
+# Install Caveman (token optimization, requires Node 18+)
+curl -fsSL https://raw.githubusercontent.com/JuliusBrussee/caveman/main/install.sh | bash
+# Windows: irm https://raw.githubusercontent.com/JuliusBrussee/caveman/main/install.ps1 | iex
 ```
 
 ### Step 2: Initialize OpenSpec
@@ -119,7 +139,26 @@ Create or update CLAUDE.md with security rules:
 - Never skip webhook signature verification
 ```
 
-### Step 5: Create Pre-Commit Hook (Optional)
+### Step 5: Install Caveman (Token Optimization)
+
+Caveman reduces output tokens by ~65% while keeping full technical accuracy. It only affects output - reasoning/thinking tokens are untouched.
+
+```bash
+# macOS/Linux/WSL
+curl -fsSL https://raw.githubusercontent.com/JuliusBrussee/caveman/main/install.sh | bash
+
+# Windows PowerShell
+irm https://raw.githubusercontent.com/JuliusBrussee/caveman/main/install.ps1 | iex
+```
+
+After installation, Caveman auto-activates in Claude Code. Commands:
+- `/ug` - Toggle caveman mode
+- `/ug:lite` - Light compression
+- `/ug:full` - Full compression (default)
+- `/ug:ultra` - Maximum compression
+- `/ug:stats` - Show token savings
+
+### Step 6: Create Pre-Commit Hook (Optional)
 
 Set up automatic graph rebuilding and secret scanning:
 
@@ -132,7 +171,7 @@ graphify hook install
 # or download from https://github.com/gitleaks/gitleaks
 ```
 
-### Step 6: Verify Setup
+### Step 7: Verify Setup
 
 Run verification:
 
@@ -181,7 +220,16 @@ else
     echo "⚠ Graphify not installed. Run: uv tool install graphifyy"
 fi
 
-# 3. Update .gitignore
+# 3. Install Caveman (token optimization)
+if ! [ -f "$HOME/.claude/skills/caveman/SKILL.md" ]; then
+    echo "Installing Caveman..."
+    curl -fsSL https://raw.githubusercontent.com/JuliusBrussee/caveman/main/install.sh | bash
+    echo "✓ Caveman installed (~65% token savings)"
+else
+    echo "✓ Caveman already installed"
+fi
+
+# 4. Update .gitignore
 if [ -f .gitignore ]; then
     grep -q "graphify-out/manifest.json" .gitignore || echo -e "\n# Graphify\ngraphify-out/manifest.json\ngraphify-out/cost.json" >> .gitignore
 fi
@@ -193,6 +241,7 @@ echo "  /opsx:propose \"feature\" - Start spec-driven development"
 echo "  /graphify .              - Rebuild knowledge graph"
 echo "  /graphify query \"...\"   - Query the codebase"
 echo "  /webcoded-audit security - Run security audit"
+echo "  /ug:stats                - Check token savings"
 ```
 
 ---
@@ -250,13 +299,14 @@ your-project/
 
 ---
 
-## The Three Pillars
+## The Four Pillars
 
 | Pillar | Tool | Purpose |
 |--------|------|---------|
 | **Plan** | OpenSpec | Agree on WHAT before coding |
 | **Understand** | Graphify | Query the codebase, find connections |
 | **Verify** | Webcoded Audit | Security & quality checks |
+| **Optimize** | Caveman | Reduce output tokens by ~65% |
 
 ---
 
@@ -289,6 +339,15 @@ your-project/
 | `auth` | Auth/authz verification |
 | `pre-launch` | Launch checklist |
 
+### Caveman Commands
+| Command | Description |
+|---------|-------------|
+| `/ug` | Toggle caveman mode |
+| `/ug:lite` | Light compression |
+| `/ug:full` | Full compression |
+| `/ug:ultra` | Maximum compression |
+| `/ug:stats` | Show token savings |
+
 ---
 
 ## Why This Matters
@@ -298,5 +357,6 @@ AI coding assistants optimize for "code that runs", not "code that's safe to shi
 1. **You agree before you build** — OpenSpec specs prevent scope creep and miscommunication
 2. **You can query, not grep** — Graphify lets you ask questions about your codebase
 3. **You catch the 14 common vulnerabilities** — Webcoded Audit covers what AI-coded apps get wrong
+4. **You save ~65% on output tokens** — Caveman keeps responses concise without losing accuracy
 
-Ship boldly. Audit ruthlessly.
+Ship boldly. Audit ruthlessly. Save tokens.
