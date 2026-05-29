@@ -1,3 +1,8 @@
+---
+name: project-init
+description: Initialize a new project with spec-driven development (OpenSpec), knowledge graph (Graphify), security audit rules (Webcoded Audit), and token optimization (Caveman). Use when starting a new project, setting up a repository, or when the user asks to initialize project tooling, scaffolding, or standards.
+---
+
 # Project Init Skill
 
 Automatically initialize a new project with spec-driven development, knowledge graphs, and security best practices.

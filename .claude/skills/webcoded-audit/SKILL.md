@@ -1,3 +1,8 @@
+---
+name: webcoded-audit
+description: Audit AI-built web apps for security and quality issues covering the 14 most common vulnerabilities (RLS, IDOR, secrets, auth, webhooks, input validation). Use when the user wants a security audit, pre-launch checklist, accessibility check, or performance review of a web application.
+---
+
 # Webcoded App Audit Skill
 
 A comprehensive audit skill for AI-built web apps, based on the Webcoded App Playbook.
