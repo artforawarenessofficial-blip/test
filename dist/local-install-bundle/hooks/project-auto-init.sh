@@ -1,10 +1,9 @@
 #!/bin/bash
 set -euo pipefail
 
-# Only run in Claude Code on the web (remote environment)
-if [ "${CLAUDE_CODE_REMOTE:-}" != "true" ]; then
-  exit 0
-fi
+# Runs everywhere: local CLI, desktop, and Claude Code on the web.
+# Ensure user-local tool dirs are on PATH (openspec, graphify, etc.)
+export PATH="$HOME/.local/bin:$HOME/.npm-global/bin:$PATH"
 
 PROJECT_DIR="${CLAUDE_PROJECT_DIR:-$(pwd)}"
 cd "$PROJECT_DIR"
@@ -111,7 +110,7 @@ else
 fi
 
 # --- Caveman ---
-if [ -d "$HOME/.claude/skills/caveman" ] || command -v caveman &>/dev/null; then
+if [ -d "$HOME/.claude/plugins/marketplaces/caveman" ] || [ -f "$HOME/.claude/hooks/caveman-activate.js" ]; then
   echo "✓ Caveman ready (65% token savings)"
 else
   echo "⚠ Caveman not installed — run: curl -fsSL https://raw.githubusercontent.com/JuliusBrussee/caveman/main/install.sh | bash"
