@@ -3,3 +3,5 @@
 #   (cd claude-skills-bundle && zip -qr ../claude-skills-bundle.zip .)
 *.tar.gz
 *.zip
+local-install-bundle.tar.gz
+local-install-bundle.zip
