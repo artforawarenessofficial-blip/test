@@ -1,0 +1,7 @@
+# Generated archives — rebuild from claude-skills-bundle/ with:
+#   tar -czf claude-skills-bundle.tar.gz claude-skills-bundle
+#   (cd claude-skills-bundle && zip -qr ../claude-skills-bundle.zip .)
+*.tar.gz
+*.zip
+local-install-bundle.tar.gz
+local-install-bundle.zip

@@ -1,0 +1,275 @@
+openapi: 3.1.0
+info:
+  title: Skills API
+  description: API for managing and accessing skills
+  version: 1.0.0
+  contact:
+    name: API Support
+
+servers:
+  - url: http://localhost:3000/api/v1
+    description: Development server
+  - url: https://api.example.com/v1
+    description: Production server
+
+paths:
+  /skills:
+    get:
+      summary: List all skills
+      operationId: listSkills
+      tags:
+        - Skills
+      parameters:
+        - name: category
+          in: query
+          description: Filter by category
+          schema:
+            type: string
+        - name: limit
+          in: query
+          description: Maximum number of skills to return
+          schema:
+            type: integer
+            default: 20
+            maximum: 100
+      responses:
+        '200':
+          description: A list of skills
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Skill'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+    post:
+      summary: Create a new skill
+      operationId: createSkill
+      tags:
+        - Skills
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkillInput'
+      responses:
+        '201':
+          description: Skill created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Skill'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /skills/{skillId}:
+    get:
+      summary: Get a skill by ID
+      operationId: getSkill
+      tags:
+        - Skills
+      parameters:
+        - $ref: '#/components/parameters/SkillId'
+      responses:
+        '200':
+          description: Skill details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Skill'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+    put:
+      summary: Update a skill
+      operationId: updateSkill
+      tags:
+        - Skills
+      parameters:
+        - $ref: '#/components/parameters/SkillId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkillInput'
+      responses:
+        '200':
+          description: Skill updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Skill'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+    delete:
+      summary: Delete a skill
+      operationId: deleteSkill
+      tags:
+        - Skills
+      parameters:
+        - $ref: '#/components/parameters/SkillId'
+      responses:
+        '204':
+          description: Skill deleted successfully
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /categories:
+    get:
+      summary: List all skill categories
+      operationId: listCategories
+      tags:
+        - Categories
+      responses:
+        '200':
+          description: A list of categories
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Category'
+
+components:
+  schemas:
+    Skill:
+      type: object
+      required:
+        - id
+        - name
+        - category
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the skill
+        name:
+          type: string
+          description: Name of the skill
+          example: JavaScript
+        description:
+          type: string
+          description: Detailed description of the skill
+        category:
+          type: string
+          description: Category the skill belongs to
+          example: Programming
+        level:
+          type: string
+          enum:
+            - beginner
+            - intermediate
+            - advanced
+            - expert
+          description: Proficiency level
+        tags:
+          type: array
+          items:
+            type: string
+          description: Tags for searching
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    SkillInput:
+      type: object
+      required:
+        - name
+        - category
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        description:
+          type: string
+          maxLength: 1000
+        category:
+          type: string
+        level:
+          type: string
+          enum:
+            - beginner
+            - intermediate
+            - advanced
+            - expert
+        tags:
+          type: array
+          items:
+            type: string
+
+    Category:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        skillCount:
+          type: integer
+
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        details:
+          type: object
+
+  parameters:
+    SkillId:
+      name: skillId
+      in: path
+      required: true
+      description: The skill ID
+      schema:
+        type: string
+        format: uuid
+
+  responses:
+    BadRequest:
+      description: Invalid request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    InternalError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
